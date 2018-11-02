@@ -4,3 +4,5 @@
 字符串操作：strip()去掉开头结尾的字符；join()添加分隔符；split()将字符串分解成序列
 # Git
 666 Git Bash Test 666
+# This is branch test
+in test branch
