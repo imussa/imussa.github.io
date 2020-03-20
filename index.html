@@ -1,0 +1,21 @@
+<html>
+    <header>
+        <title>IMUSSA</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    </header>
+    <body>
+        <div id="app">
+            <span :title="message">
+                Hello Vue
+            </span>
+        </div>
+        <script>
+            const app = new Vue({
+                el: '#app',
+                data : {
+                    message: '页面创建于：' + new Date().toLocaleDateString()
+                }
+            })
+        </script>
+    </body>
+</html>
