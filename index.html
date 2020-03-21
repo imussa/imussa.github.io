@@ -13,6 +13,8 @@
                 {{answer}}
             </p>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
         <script>
             const app = new Vue({
                 el: '#app',
@@ -21,16 +23,21 @@
                     answer: '你还没有提问题，我不会回答的！'
                 },
                 watch: {
-                    question: (newQuestion, oldQuestion) => {
+                    question: function (newQuestion, oldQuestion) {
                         this.answer = '等你输入完了，我再告诉你！'
                         this.debouncedGetAnswer()
                     }
                 },
-                created: {
+                created: function () {
+                    // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+                    // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+                    // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+                    // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+                    // 请参考：https://lodash.com/docs#debounce
                     this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
                 },
                 methods: {
-                    getAnswer: () => {
+                    getAnswer: function () {
                         if(this.question.indexOf('?')===-1){
                             this.answer = '问题通常都是?结尾的 ;-)'
                             return
