@@ -1,59 +1,79 @@
 <html>
-    <header>
-        <title>IMUSSA</title>
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    </header>
-    <body>
-        <div id="app">
-            <p>
-                问一个yes或no的问题：
-                <input v-model="question">
-            </p>
-            <p>
-                {{answer}}
-            </p>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
-        <script>
-            const app = new Vue({
-                el: '#app',
-                data : {
-                    question: '',
-                    answer: '你还没有提问题，我不会回答的！'
-                },
-                watch: {
-                    question: function (newQuestion, oldQuestion) {
-                        this.answer = '等你输入完了，我再告诉你！'
-                        this.debouncedGetAnswer()
-                    }
-                },
-                created: function () {
-                    // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
-                    // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
-                    // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
-                    // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
-                    // 请参考：https://lodash.com/docs#debounce
-                    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
-                },
-                methods: {
-                    getAnswer: function () {
-                        if(this.question.indexOf('?')===-1){
-                            this.answer = '问题通常都是?结尾的 ;-)'
-                            return
-                        }
-                        this.answer = '容我我想想啊'
-                        var vm = this
-                        axios.get('https://yesno.wtf/api')
-                            .then((response) => {
-                                vm.answer = _.capitalize(response.data.answer)
-                            })
-                            .catch((err) => {
-                                vm.answer = '错误，无法访问这个API接口' + err
-                            })
-                    }
-                }
+<header>
+  <title>IMUSSA</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</header>
+
+<body>
+  <div id="app">
+    <p>
+      问一个yes或no的问题：
+      <input v-model="question">
+    </p>
+    <p>
+      {{answer}}
+    </p>
+    <p><input type="text" v-model="code_prefix" placeholder="输入身份证前17位">
+      <button @click="onClick">ok</button>
+    </p>
+    <p>{{full_code}}</p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        question: '',
+        answer: '你还没有提问题，我不会回答的！',
+        code_prefix: '',
+        full_code: ''
+      },
+      watch: {
+        question: function(newQuestion, oldQuestion) {
+          this.answer = '等你输入完了，我再告诉你！'
+          this.debouncedGetAnswer()
+        }
+      },
+      created: function() {
+        // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+        // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+        // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+        // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+        // 请参考：https://lodash.com/docs#debounce
+        this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+      },
+      methods: {
+        getAnswer: function() {
+          if (this.question.indexOf('?') === -1) {
+            this.answer = '问题通常都是?结尾的 ;-)'
+            return
+          }
+          this.answer = '容我我想想啊'
+          var vm = this
+          axios.get('https://yesno.wtf/api')
+            .then((response) => {
+              vm.answer = _.capitalize(response.data.answer)
             })
-        </script>
-    </body>
+            .catch((err) => {
+              vm.answer = '错误，无法访问这个API接口' + err
+            })
+        },
+        onClick: function() {
+          let index_array = ['1','0','x','9','8','7','6','5','4','3','2']
+          this.full_code = index_array[_.sum(
+            _.map(
+              _.split(this.code_prefix, '', this.code_prefix.length),
+              (n, i) => {
+                let c = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+                return Number(n) * c[i]
+              }
+            )
+          ) % 11]
+        }
+      }
+    })
+  </script>
+</body>
+
 </html>
