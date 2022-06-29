@@ -4,3 +4,8 @@
 字符串操作：strip()去掉开头结尾的字符；join()添加分隔符；split()将字符串分解成序列
 # Git
 666 Git Bash Test 666
+## python-miio == 0.5.11
+```bash
+# AttributeError: 'DeviceGroup' object has no attribute 'resultcallback'.
+sed -i 's/resultcallback/result_callback/g' /usr/local/lib/python3.10/site-packages/miio/integrations/vacuum/roborock/vacuum.py
+```
